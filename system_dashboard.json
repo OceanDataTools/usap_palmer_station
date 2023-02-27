@@ -55,7 +55,7 @@
           "refId": "A"
         }
       ],
-      "title": "Production OpenRVDAS - nbp-odas-p",
+      "title": "Waterwall OpenRVDAS System Status",
       "type": "text"
     },
     {
@@ -1070,7 +1070,7 @@
         "hide": 2,
         "label": "Host",
         "name": "host",
-        "query": "nbp-odas-p",
+        "query": "palmer",
         "skipUrlSync": false,
         "type": "constant"
       },
