@@ -1,0 +1,143 @@
+
+'CR1000
+'Adina Scott
+'May, 2016
+'Randy Jones (edits for salinity truncation)
+'Mar, 2017
+'Matt Boyer(edits for calibration factors and salinity truncation)
+'Aug, 2017
+'AustinMcHugh 10Oct2019
+'Saved previously functioning version as WaterWall_20191008
+'The previous version was intermittantly giving erroneous values for remote temp
+'These would occur a few times a day
+'Changed method to read Remote Temp from SerialIn to the more consistant SerialRecord
+'previous instructions were commented out not deleted.
+
+'||||||||||| User Editable Calibration Factors |||||||||||
+'xMiss s/n 1698PR, LE41045, May 2022
+Const xMiss_Vref=4.699		'[V]
+Const xMiss_Vdark=0.006		'[V]
+
+'Fluor s/n 3739, LE41041, May 2022
+Const Fluor_scale=25		'[ug/L/V]
+Const Fluor_dark=0.018		'[V]
+
+'Flowmeter Omega p/n 131
+Const Flow_Scale=1.723775	'[pulses/sec]->[mL/sec]
+'Const Flow_Scale=0.347285  '[pulses/sec]->[mL/sec], low flow
+'END USER EDITABLE PART
+'|||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+'Declare Variables and Units
+Public BattV
+Public PTemp_C
+Public Flow_Cnt
+Public Fluor_V
+Public xMiss_V
+Public Flow_Rate
+Public Trans
+Public CHL
+Public TSG_InStr As String * 200
+
+'Austins variables to read remote temp probe
+Public NBytesReturned38
+Public SBE38_Value(1)
+Alias SBE38_Value(1) = RTP_Temp
+Public SBE38_RespString As String * 12
+'Public RTP_In as String
+'Public RTP_Temp As Float
+
+Public TSG_Data(3) as Float
+Public TSG_Temp
+Public TSG_Cond
+Public TSG_Sal
+Public DataOut as String * 1000
+
+Units BattV=Volts
+Units PTemp_C=Deg C
+Units Flow_Cnt=Counts/Hz
+Units Fluor_V=mV
+Units xMiss_V=mV
+Units Flow_Rate=mL/sec
+Units CHL=ug/L
+Units Trans=%
+Units RTP_Temp=Deg C
+Units TSG_Temp=Deg C
+Units TSG_Cond=S
+'Units TSG_Sal=
+
+
+'Define Data Tables
+DataTable(Table1,True,-1)
+	DataInterval(0,30,Sec,10)
+	Sample(1,Flow_Cnt,FP2)
+	Sample(1,Flow_Rate,FP2)
+	Sample(1,Fluor_V,FP2)
+	Sample(1,CHL,FP2)
+	Sample(1,xMiss_V,FP2)
+	Sample(1,Trans,FP2)
+	Sample(1,RTP_Temp, FP2)
+	Sample(1,TSG_Temp, FP2)
+	Sample(1,TSG_Cond, FP2)
+	Sample(1,TSG_Sal, FP2)
+EndTable
+
+'Main Program 
+BeginProg
+
+'Initialize serial ports
+SerialOpen(ComRS232, 9600, 0,0,5000)			'Computer through RS232 port
+SerialOpen(COM1, 9600, 16, 0, 1000)			'TSG through Max 232 on Com1
+SerialOpen(COM2, 9600, 16, 0, 1000)			'RTP through Max 232 on Com2			
+
+	'Main Scan
+	Scan(30,Sec,0,0)
+		'Default CR1000 Datalogger Battery Voltage measurement 'BattV'
+		Battery(BattV)
+		'Default CR1000 Datalogger Wiring Panel Temperature measurement 'PTemp_C'
+		PanelTemp(PTemp_C,_60Hz)
+
+		'Read Pulse channel data
+		PulseCount(Flow_Cnt,1,1,0,10000,1,0)				'Flowmeter, 10-second averaged counts [Hz]
+
+		'Read Analog Voltage Channels
+		VoltSE(Fluor_V,1,mV5000,1,True,0,_60Hz,1,0)			'Fluorometer on SE1
+		VoltSE(xMiss_V,1,mV5000,2,True,0,_60Hz,1,0)			'Tranmsissometer on SE2
+
+		'Read Serial Data
+		SerialIn(TSG_InStr, Com1, 20, CHR(10), 256)			'TSG serial input on Com1
+		SerialFlush(Com1)
+		
+    'Read in SBE38 Remote Temp
+    SerialInRecord (Com2,SBE38_RespString,0,8,13,NBytesReturned38,01)
+    SplitStr (SBE38_Value(),SBE38_RespString,",",1,0)
+'Commented out original intermittant technique
+'		SerialIn(RTP_In, Com2, 1, CHR(10), 256)				'RTP serial input on Com2
+'		SerialFlush(Com2)
+
+		'Parse Serial Data
+		SplitStr(TSG_Data,TSG_InStr,",",3,0)
+		TSG_Temp=TSG_Data(1)
+		TSG_Cond=TSG_Data(2)
+		TSG_Sal=TSG_Data(3)
+
+'		RTP_Temp=RTP_In
+
+		'Calculate physical quantities from raw data
+		Flow_Rate=Flow_Scale*Flow_Cnt							'Flow rate in mL/sec
+		Trans=100*(xMiss_V-1000*xMiss_Vdark)/(1000*xMiss_Vref-1000*xMiss_Vdark)	'% Transmittance
+		CHL=Fluor_scale*(Fluor_V-1000*Fluor_dark)/1000					'chlorophyl in ug/L
+
+		'Construct Output String
+		DataOut=Public.TimeStamp(4,1)+", "+FormatFloat(Flow_Cnt,"%.1f")+", "+FormatFloat(Flow_Rate,"%.1f")+", "+FormatFloat(Fluor_V,"%.0f")+", "+FormatFloat(CHL,"%.2f")+", "+FormatFloat(xMiss_V,"%.0f")+", "+FormatFloat(Trans,"%.1f")+", "+FormatFloat(RTP_Temp,"%.3f")+", "+FormatFloat(TSG_Temp,"%.3f")+", "+FormatFloat(TSG_Cond,"%.4f")+", "+FormatFloat(TSG_Sal,"%.3f")+CHR(10)+CHR(13)
+
+		'Send Data to Computer+
+		SerialOut(ComRS232,DataOut,"",0,100)
+		'Call Data Tables and Store Data
+		CallTable Table1
+	NextScan
+SerialClose(ComRS232)
+SerialClose(Com1)
+SerialClose(Com2)
+EndProg

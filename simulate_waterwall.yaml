@@ -1,0 +1,13 @@
+# Config file for creating/feeding simulated serial port feed for
+# Campbell output of Palmer Station waterwall. To be parsed by...?
+#
+# logger/utils/simulate_data.py --loop --config local/usap/palmer/simulate_waterwall.yaml
+
+
+Campbell:
+  class: Serial
+  port: /tmp/tty_campbell
+  #filebase: local/usap/palmer/data/PAL-waterwall-data-example-timestamped.txt
+  filebase: local/usap/palmer/data/PAL-waterwall-data-example-fast.txt
+  quiet: true
+

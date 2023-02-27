@@ -1,0 +1,154 @@
+###########################################################
+###########################################################
+# YAML cruise definition file for OpenRVDAS, reading waterwall
+# serial data off Campbell Scientific at Palmer Station.
+#
+# 2023-02-26 - David Pablo Cohn
+
+# NOTE: Variables don't work, of course. Currently manually configured
+# to try and read from simulated serial port: /tmp/tty_campbell
+
+variables:
+  serial_port: /tmp/tty_campbell  # Simulated serial port
+  #serial_port: /dev/tty.usbserial-AQ0293NI  # Actual serial port created by cable
+  # 2022-12-30 14:43:30.07, 17.3, 29.9, 51, 0.84, 2251, 47.8, 1.879, 2.775, 3.0349, 33.634
+  parser_field_patterns:
+  - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+  - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+  unparsed_record_port: 6224
+  logfile_base: /var/tmp/log/Campbell
+
+
+########################################
+cruise:
+  id: PalmerWaterwall
+  start: '2023-01-01'  # Don't really need these, but...
+  end: '2122-12-31'
+
+########################################
+loggers:
+  Campbell:
+    configs:
+    - Campbell->off
+    - Campbell->net
+    - Campbell->net/file
+
+  net_reader:
+    configs:
+    - net_reader->off
+    - net_reader->on
+    - net_reader->on+influx
+########################################
+modes:
+  'off':
+    Campbell: Campbell->off
+    net_reader: net_reader->off
+
+  no_write:
+    Campbell: Campbell->net
+    net_reader: net_reader->on
+
+  no_write+influx:
+    Campbell: Campbell->net
+    net_reader: net_reader->on+influx
+
+  write:
+    Campbell: Campbell->net/file
+    net_reader: net_reader->on
+
+  write+influx:
+    Campbell: Campbell->net/file
+    net_reader: net_reader->on+influx
+
+########################################
+default_mode: 'off'
+
+########################################
+configs:
+  ########
+  Campbell->off:
+    name: Campbell->off
+
+  Campbell->net:
+    name: Campbell->net
+    readers:                    # Read from serial port
+    - class: SerialReader
+      kwargs:
+        port: /tmp/tty_campbell
+    transforms:                 # Add timestamp and logger label
+    - class: TimestampTransform
+    - class: PrefixTransform
+      kwargs:
+        prefix: CAMP
+    writers:
+    - class: UDPWriter
+      kwargs:
+        port: 6224
+        destination: 255.255.255.255
+    #- class: FileWriter    # for debugging
+
+  Campbell->net/file:
+    name: Campbell->net/file
+    readers:                    # Read from serial port
+    - class: SerialReader
+      kwargs:
+        port: /tmp/tty_campbell
+    transforms:                 # Add timestamp
+    - class: TimestampTransform
+    writers:
+    - class: LogfileWriter      # Write to logfile
+      kwargs:
+        filebase: /var/tmp/log/Campbell
+    - class: ComposedWriter
+      kwargs:
+        transforms:
+        - class: PrefixTransform
+          kwargs:
+            prefix: CAMP
+        writers:
+        - class: UDPWriter
+          kwargs:
+            port: 6224
+            destination: 255.255.255.255
+ ########
+  net_reader->off:
+    name: net_reader->off
+
+  net_reader->on:
+    name: net_reader->on
+    readers:                    # Read the UDP broadcast
+    - class: UDPReader
+      kwargs:
+        port: 6224
+    transforms:                 # Add timestamp and logger label
+    - class: ParseTransform
+      kwargs:
+        field_patterns:
+        - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+        - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+    writers:
+    - class: CachedDataWriter
+      kwargs:
+        data_server: localhost:8766
+    #- class: FileWriter    # for debugging
+
+  net_reader->on+influx:
+    name: net_reader->on+influx
+    readers:                    # Read the UDP broadcast
+    - class: UDPReader
+      kwargs:
+        port: 6224
+    transforms:                 # Add timestamp and logger label
+    - class: ParseTransform
+      kwargs:
+        field_patterns:
+        - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+        - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+    writers:
+    - class: CachedDataWriter
+      kwargs:
+        data_server: localhost:8766
+    - class: InfluxDBWriter
+      kwargs:
+        bucket_name: openrvdas
+    #- class: FileWriter    # for debugging
