@@ -9,8 +9,8 @@ name: Campbell->net
 readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
-    port: /tmp/tty_campbell
-    #port: /dev/tty.usbserial-AQ0293NI
+    #port: /tmp/tty_campbell
+    port: /dev/ttyUSB0
 transforms:                 # Add timestamp and logger label
 - class: TimestampTransform
 - class: PrefixTransform

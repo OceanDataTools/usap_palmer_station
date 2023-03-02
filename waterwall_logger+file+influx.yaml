@@ -1,0 +1,33 @@
+###########################################################
+###########################################################
+# YAML cruise definition file for OpenRVDAS, reading waterwall
+# serial data off Campbell Scientific at Palmer Station.
+#
+# 2023-03-02 - David Pablo Cohn
+
+name: Campbell->net
+readers:                    # Read from serial port
+- class: SerialReader
+  kwargs:
+    port: /dev/ttyUSB0
+transforms:                 # Add timestamp and logger label
+- class: TimestampTransform
+writers:
+- class: LogfileWriter      # Write to logfile
+  kwargs:
+    filebase: /data/openrvdas/Campbell
+- class: ComposedWriter
+  kwargs:
+    transforms:                 # Add timestamp and logger label
+    - class: PrefixTransform
+      kwargs:
+        prefix: CAMP
+    - class: ParseTransform
+      kwargs:
+        field_patterns:
+          - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+          - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+    writers:
+    - class: InfluxDBWriter
+      kwargs:
+        bucket_name: openrvdas
