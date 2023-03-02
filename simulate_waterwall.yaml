@@ -3,6 +3,11 @@
 #
 # logger/utils/simulate_data.py --loop --config local/usap/palmer/simulate_waterwall.yaml
 
+# NOTE: this file is obsolete. Instead, just use:
+# logger/listener/listen.py \
+#   --file /opt/openrvdas/local/usap/palmer/data/waterwall_20230123.txt \
+#   --interval 5 \
+#   --write_serial port=/dev/ttyUSB1
 
 Campbell:
   class: Serial

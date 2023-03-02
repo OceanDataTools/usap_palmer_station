@@ -5,7 +5,7 @@
 #
 # 2023-03-02 - David Pablo Cohn
 
-name: Campbell->net
+name: influx
 readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
@@ -21,8 +21,8 @@ writers:
     - class: ParseTransform
       kwargs:
         field_patterns:
-          - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
-          - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+        - '{Time:ti}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+        - '{Time:ti}'
     writers:
     - class: InfluxDBWriter
       kwargs:

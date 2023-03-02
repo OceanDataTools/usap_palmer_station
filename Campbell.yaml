@@ -12,34 +12,34 @@ Campbell_CR1000:
   fields:
     FlowCnt:
       units: "Counts/Hz"
-      description: ""
+      description: "Flow counts"
     FlowRate:
       units: "mL/sec"
-      description: ""
+      description: "Flow rate"
     FluorV:
       units: "mV"
-      description: ""
+      description: "Fuorometer voltage"
     CHL:
       units: "ug/L"
-      description: ""
+      description: "Chlorophyll concentration"
     xMissV:
       units: "mV"
-      description: ""
+      description: "Transmissometer voltage"
     Trans:
       units: "%"
-      description: ""
+      description: "Transmission"
     RtpTemp:
       units: "Deg C"
-      description: ""
+      description: "Seawater intake temperature"
     TsgTemp:
       units: "Deg C"
-      description: ""
+      description: "Thermosalinograph temperature"
     TsgCond:
-      units: "S"
-      description: ""
+      units: "S/m"
+      description: "Thermosalinograph conductivity"
     TsgSal:
-      units: ""
-      description: ""
+      units: "psu"
+      description: "Thermosalinograph salinity"
 
 ######################################
 PalmerWaterwall:
