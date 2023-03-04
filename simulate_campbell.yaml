@@ -1,0 +1,29 @@
+###########################################################
+###########################################################
+# Simulate the Palmer Station Campbell Scientific CR1000
+# as configured, but running on a Raspberry Pi using /dev/ttyUSB1
+# as its serial out port.
+#
+# Run using:
+#   logger/listener/listen.py --config_file simulate_campbell.yaml
+
+name: Campbell->net
+readers:                    # Read from serial port
+- class: TextFileReader
+  kwargs:
+    file_spec: /opt/openrvdas/local/usap/palmer/data/waterwall_20230123.txt
+    interval: 5
+transforms:                 # Add timestamp and logger label
+- class: SliceTransform
+  kwargs:
+    fields: '2:'
+    sep: ' '
+- class: TimestampTransform
+  kwargs:
+    time_format: '%Y-%m-%d %H:%M:%S.%f'  # ISO 8601'
+    sep: ', '
+writers:
+- class: SerialWriter
+  kwargs:
+    port: '/dev/ttyUSB1'
+- class: FileWriter
