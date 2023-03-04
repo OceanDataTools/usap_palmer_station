@@ -24,7 +24,7 @@ writers:
         prefix: Campbell
     - class: ParseTransform
       kwargs:
-    record_format: '{data_id:w} {timestamp:ti}, {field_string}'
+        record_format: '{data_id:w} {timestamp:ti}, {field_string}'
         field_patterns:
         - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
     writers:
