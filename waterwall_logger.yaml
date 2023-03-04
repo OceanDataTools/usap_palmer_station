@@ -12,9 +12,12 @@ readers:                    # Read from serial port
     #port: /tmp/tty_campbell
     port: /dev/ttyUSB0
 transforms:                 # Add timestamp and logger label
+- class: PrefixTransform
+  kwargs:
+    prefix: Campbell
 - class: ParseTransform
   kwargs:
-    record_format: '{timestamp:ti}, {field_string}'
+    record_format: '{data_id:w} {timestamp:ti}, {field_string}'
     field_patterns:
     - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
 
