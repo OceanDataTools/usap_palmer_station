@@ -63,8 +63,6 @@ configs:
     - class: SerialReader
       kwargs:
         port: /dev/ttyUSB0
-    transforms:                 # Add timestamp and logger label
-    - class: TimestampTransform
     writers:
     - class: LogfileWriter      # Write to logfile
       kwargs:
@@ -77,16 +75,12 @@ configs:
     - class: SerialReader
       kwargs:
         port: /dev/ttyUSB0
-    transforms:                 # Add timestamp and logger label
-    - class: TimestampTransform
-    - class: PrefixTransform
-      kwargs:
-        prefix: CAMP
+    transforms:
     - class: ParseTransform
       kwargs:
+        record_format: '{timestamp:ti}, {field_string}'
         field_patterns:
-        - '{Time:ti}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
-        - '{Time:ti}'
+        - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
     writers:
     - class: InfluxDBWriter
       kwargs:
@@ -99,23 +93,18 @@ configs:
     - class: SerialReader
       kwargs:
         port: /dev/ttyUSB0
-    transforms:                 # Add timestamp and logger label
-    - class: TimestampTransform
     writers:
     - class: LogfileWriter      # Write to logfile
       kwargs:
         filebase: /data/openrvdas/Campbell
-    - class: ComposedWriter
+    - class: ComposedWriter     # Parse and write to InfluxDB
       kwargs:
-        transforms:                 # Add timestamp and logger label
-        - class: PrefixTransform
-          kwargs:
-            prefix: CAMP
+        transforms:
         - class: ParseTransform
           kwargs:
+            record_format: '{timestamp:ti}, {field_string}'
             field_patterns:
-            - '{Time:ti}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
-            - '{Time:ti}'
+            - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
         writers:
         - class: InfluxDBWriter
           kwargs:

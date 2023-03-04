@@ -10,20 +10,13 @@ readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
     port: /dev/ttyUSB0
-writers:
-- class: ComposedWriter
+transforms:
+- class: ParseTransform
   kwargs:
-    transforms:                 # Add timestamp and logger label
-    - class: TimestampTransform
-    - class: PrefixTransform
-      kwargs:
-        prefix: CAMP
-    - class: ParseTransform
-      kwargs:
-        field_patterns:
-        - '{Time:ti}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
-        - '{Time:ti}'
-    writers:
-    - class: InfluxDBWriter
-      kwargs:
-        bucket_name: openrvdas
+    record_format: '{timestamp:ti}, {field_string}'
+    field_patterns:
+    - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+writers:
+- class: InfluxDBWriter
+  kwargs:
+    bucket_name: openrvdas
