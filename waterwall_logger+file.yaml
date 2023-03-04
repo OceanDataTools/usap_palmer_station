@@ -14,3 +14,5 @@ writers:
 - class: LogfileWriter      # Write to logfile
   kwargs:
     filebase: /data/openrvdas/Campbell
+    split_char: ','         # What marks timestamp delimiter
+    time_format: '%Y-%m-%d %H:%M:%S.%f'
