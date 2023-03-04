@@ -20,10 +20,12 @@ transforms:                 # Add timestamp and logger label
     sep: ' '
 - class: TimestampTransform
   kwargs:
-    time_format: '%Y-%m-%d %H:%M:%S.%f'  # ISO 8601'
+    #time_format: '%Y-%m-%dT%H:%M:%S.%f'  # UTC
+    time_format: '%Y-%m-%d %H:%M:%S.%f'  # Local, with blank time_zone
+    time_zone:
     sep: ', '
 writers:
 - class: SerialWriter
   kwargs:
     port: '/dev/ttyUSB1'
-- class: FileWriter
+#- class: FileWriter
