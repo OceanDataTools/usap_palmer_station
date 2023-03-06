@@ -44,7 +44,7 @@ modes:
     Campbell: Campbell->file/influx
 
 ########################################
-default_mode: Campbell->file/influx
+default_mode: file/influx
 
 ########################################
 configs:
