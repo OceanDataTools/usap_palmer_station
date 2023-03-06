@@ -16,7 +16,6 @@ variables:
   unparsed_record_port: 6224
   logfile_base: /data/openrvdas/Campbell
 
-
 ########################################
 cruise:
   id: PalmerWaterwall
@@ -37,13 +36,10 @@ loggers:
 modes:
   'off':   # off is a YAML keyword, so needs to be quoted
     Campbell: Campbell->off
-
   file:
     Campbell: Campbell->file
-
   influx:
     Campbell: Campbell->influx
-
   file/influx:
     Campbell: Campbell->file/influx
 
@@ -93,7 +89,7 @@ configs:
 
   ###############################
   Campbell->file/influx:
-    name: Campbell->file+influx
+    name: Campbell->file/influx
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
