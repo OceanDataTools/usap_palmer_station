@@ -28,37 +28,37 @@ cruise:
 loggers:
   Campbell:
     configs:
-    - off
-    - file
-    - influx
-    - file+influx
+    - Campbell->off
+    - Campbell->file
+    - Campbell->influx
+    - Campbell->file/influx
 
 ########################################
 modes:
-  'off':
-    Campbell: 'off'
+  'off':   # off is a YAML keyword, so needs to be quoted
+    Campbell: Campbell->off
 
   file:
-    Campbell: file
+    Campbell: Campbell->file
 
   influx:
-    Campbell: influx
+    Campbell: Campbell->influx
 
-  file+influx:
-    Campbell: file+influx
+  file/influx:
+    Campbell: Campbell->file/influx
 
 ########################################
-default_mode: file+influx
+default_mode: Campbell->file/influx
 
 ########################################
 configs:
   ###############################
-  'off':
-    name: 'off'
+  Campbell->off:
+    name: Campbell->off
 
   ###############################
-  file:
-    name: file
+  Campbell->file:
+    name: Campbell->file
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
@@ -71,8 +71,8 @@ configs:
         time_format: '%Y-%m-%d %H:%M:%S.%f'
 
   ###############################
-  influx:
-    name: influx
+  Campbell->influx:
+    name: Campbell->influx
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
@@ -92,8 +92,8 @@ configs:
         bucket_name: openrvdas
 
   ###############################
-  file+influx:
-    name: file+influx
+  Campbell->file/influx:
+    name: Campbell->file+influx
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
