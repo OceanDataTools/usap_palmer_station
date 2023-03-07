@@ -7,13 +7,14 @@
 # specific code and configurations. It should be run as the user
 # who will be running OpenRVDAS (e.g. 'rvdas'):
 #
-#     /opt/openrvdas/local/usap/palmer/install_palmer.sh
+#     /opt/openrvdas/local/usap/palmer/install_waterwall.sh
 #
 # The script has been designed to be idempotent, that is, if can be
 # run over again with no ill effects.
 #
 # Once installed, you should be able to start/stop/disable the
-# relevant services using supervisorctl.
+# relevant services using supervisorctl, either via the command line
+# or via the webconsole at localhost:9001
 #
 # This script is somewhat rudimentary and has not been extensively
 # tested. If it fails on some part of the installation, there is no
@@ -21,7 +22,7 @@
 # produce the desired result.  Bug reports, and even better, bug
 # fixes, will be greatly appreciated.
 
-PREFERENCES_FILE='.install_palmer_preferences'
+PREFERENCES_FILE='.install_waterwall_preferences'
 
 # This is the name of the symlinked port that is specified in the various
 # logger config files. We will create a link from it to wherever the
