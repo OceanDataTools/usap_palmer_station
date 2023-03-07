@@ -135,6 +135,7 @@ yes_no() {
 function set_up_data_directory {
     DATA_DIR=/data/openrvdas
     if [ ! -d $DATA_DIR ]; then
+        echo "#########################################################################"
         echo "Creating data directory ${DATA_DIR}. Please enter sudo password if prompted."
         sudo mkdir -p /data/openrvdas
         sudo chown rvdas /data/openrvdas
