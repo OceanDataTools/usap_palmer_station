@@ -58,7 +58,7 @@ configs:
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
-        port: /dev/ttyUSB0
+        port: /dev/ttyCampbell
     writers:
     - class: LogfileWriter      # Write to logfile
       kwargs:
@@ -72,7 +72,7 @@ configs:
     readers:                    # Read from serial port
     - class: SerialReader
       kwargs:
-        port: /dev/ttyUSB0
+        port: /dev/ttyCampbell
     transforms:
     - class: PrefixTransform
       kwargs:

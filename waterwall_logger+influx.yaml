@@ -9,7 +9,7 @@ name: influx
 readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
-    port: /dev/ttyUSB0
+    port: /dev/ttyCampbell
 transforms:
 - class: PrefixTransform
   kwargs:
