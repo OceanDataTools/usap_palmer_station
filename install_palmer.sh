@@ -135,7 +135,7 @@ yes_no() {
 function create_serial_port {
     echo "Creating symlink from actual serial port ($ACTUAL_CAMPBELL_PORT) to $SYMLINK_PORT."
     echo "Please enter sudo password if prompted."
-    sudo ln -s $ACTUAL_CAMPBELL_PORT $SYMLINK_PORT
+    sudo ln -f -s $ACTUAL_CAMPBELL_PORT $SYMLINK_PORT
 }
 
 ###########################################################################
@@ -167,7 +167,7 @@ function set_up_supervisor {
     fi
 
     ##########
-    cat >> $TMP_SUPERVISOR_FILE <<EOF
+    cat >> $TMP_SUPERVISOR_CONF <<EOF
 ; This file, when used to replace /etc/supervisor/conf.d/openrvdas.conf,
 ; will directly run the waterwall_logger+file+influx.yaml logger instead off
 ; starting a logger_manager and allowing the user to select different logger
@@ -211,7 +211,7 @@ EOF
         fi
 
         # Create the config file in /tmp
-        cat >> $TMP_SUPERVISOR_FILE <<EOF
+        cat >> $TMP_SUPERVISOR_CONF <<EOF
 
 [program:simulate_campbell]
 command=${OPENRVDAS_PATH}s/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/simulate_campbell.yaml
@@ -271,7 +271,7 @@ echo "with the Palmer Station waterwall."
 echo
 read -p "OpenRVDAS path? ($DEFAULT_OPENRVDAS_PATH) " OPENRVDAS_PATH
 OPENRVDAS_PATH=${OPENRVDAS_PATH:-$DEFAULT_OPENRVDAS_PATH}
-echo
+
 read -p "Path to Palmer-specific code? ($DEFAULT_DIR_PATH) " DIR_PATH
 DIR_PATH=${DIR_PATH:-$DEFAULT_DIR_PATH}
 echo
