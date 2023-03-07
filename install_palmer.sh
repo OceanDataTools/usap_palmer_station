@@ -159,7 +159,7 @@ function set_up_supervisor {
         SUPERVISOR_CONF=/etc/supervisord.d/waterwall_logger.ini
         OPENRVDAS_CONF=/etc/supervisord.d/openrvdas.ini
     elif [ $OS_TYPE == 'Ubuntu' ]; then
-        SUPERVISOR_FILE=/etc/supervisor/conf.d/waterwall_logger.conf
+        SUPERVISOR_CONF=/etc/supervisor/conf.d/waterwall_logger.conf
         OPENRVDAS_CONF=/etc/supervisor/conf.d/openrvdas.conf
     else
         echo "ERROR: Unknown OS/architecture \"$OS_TYPE\"."
