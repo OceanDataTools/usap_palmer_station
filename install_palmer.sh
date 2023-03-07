@@ -132,6 +132,18 @@ yes_no() {
 
 ###########################################################################
 # Create a symlink from the actual serial port to
+function set_up_data_directory {
+    DATA_DIR=/data/openrvdas
+    if [ ! -d $DATA_DIR ]; then
+        echo "Creating data directory ${DATA_DIR}. Please enter sudo password if prompted."
+        sudo mkdir -p /data/openrvdas
+        sudo chown rvdas /data/openrvdas
+        sudo chgrp rvdas /data/openrvdas
+    fi
+}
+
+###########################################################################
+# Create a symlink from the actual serial port to
 function create_serial_port {
     echo "Creating symlink from actual serial port ($ACTUAL_CAMPBELL_PORT) to $SYMLINK_PORT."
     echo "Please enter sudo password if prompted."
@@ -309,6 +321,8 @@ save_default_variables
 
 #########################################################################
 # Do the actual things.
+
+set_up_data_directory
 
 create_serial_port
 
