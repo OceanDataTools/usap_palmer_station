@@ -214,7 +214,7 @@ EOF
         cat >> $TMP_SUPERVISOR_CONF <<EOF
 
 [program:simulate_campbell]
-command=${OPENRVDAS_PATH}s/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/simulate_campbell.yaml
+command=${OPENRVDAS_PATH}/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/simulate_campbell.yaml
 directory=${OPENRVDAS_PATH}
 autostart=${AUTOSTART_SIMULATOR}
 autorestart=true
