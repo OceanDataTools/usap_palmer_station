@@ -308,6 +308,7 @@ fi
 echo
 read -p "HTTP/HTTPS proxy to use ($DEFAULT_HTTP_PROXY)? " HTTP_PROXY
 HTTP_PROXY=${HTTP_PROXY:-$DEFAULT_HTTP_PROXY}
+echo
 
 #########################################################################
 # Save defaults in a preferences file for the next time we run.
