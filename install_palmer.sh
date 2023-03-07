@@ -146,6 +146,7 @@ function set_up_data_directory {
 ###########################################################################
 # Create a symlink from the actual serial port to
 function create_serial_port {
+    echo "#########################################################################"
     echo "Creating symlink from actual serial port ($ACTUAL_CAMPBELL_PORT) to $SYMLINK_PORT."
     echo "Please enter sudo password if prompted."
     sudo ln -f -s $ACTUAL_CAMPBELL_PORT $SYMLINK_PORT
