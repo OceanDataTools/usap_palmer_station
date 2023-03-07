@@ -230,7 +230,7 @@ EOF
     # Copy newly-created config file into the supervisord directory
     # and disable the existing OpenRVDAS config, if it hasn't already
     # been disabled.
-    sudo cp -f $TMP_SUPERVISOR_FILE $SUPERVISOR_CONF
+    sudo cp -f $TMP_SUPERVISOR_CONF $SUPERVISOR_CONF
     if [[ -e $OPENRVDAS_CONF ]]; then
         sudo mv $OPENRVDAS_CONF ${OPENRVDAS_CONF}.bak
     fi
