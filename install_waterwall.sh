@@ -182,7 +182,7 @@ function set_up_supervisor {
     fi
 
     ##########
-    cat >> $TMP_SUPERVISOR_CONF <<EOF
+    cat > $TMP_SUPERVISOR_CONF <<EOF
 ; This file, when used to replace /etc/supervisor/conf.d/openrvdas.conf,
 ; will directly run the waterwall_logger+file+influx.yaml logger instead off
 ; starting a logger_manager and allowing the user to select different logger
