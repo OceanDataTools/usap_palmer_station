@@ -64,8 +64,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -114,8 +113,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "query": "from(bucket: \"openrvdas\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"Campbell\") |> filter(fn: (r) => r._field == \"FlowRate\") |> last() |> yield(name: \"mean\")\n\n\n\n\n\n",
           "refId": "A"
@@ -126,8 +124,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -207,8 +204,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"FlowRate\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -220,8 +216,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -300,8 +295,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"FluorV\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -313,8 +307,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -393,8 +386,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"RtpTemp\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -406,8 +398,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -486,8 +477,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"FlowCnt\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")  ",
@@ -499,8 +489,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -579,8 +568,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"CHL\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -592,8 +580,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -672,8 +659,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"xMissV\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -685,8 +671,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -765,8 +750,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"TsgTemp\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -778,8 +762,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -858,8 +841,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"TsgCond\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -871,8 +853,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -951,8 +932,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"TsgSal\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -964,8 +944,7 @@
     },
     {
       "datasource": {
-        "type": "influxdb",
-        "uid": "YFptCHx4k"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -1044,8 +1023,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "YFptCHx4k"
+            "type": "influxdb"
           },
           "hide": false,
           "query": "from(bucket: \"openrvdas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Campbell\")\n  |> filter(fn: (r) => r[\"_field\"] == \"Trans\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
