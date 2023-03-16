@@ -9,7 +9,7 @@ name: file+influx
 readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
-    port: /dev/ttyCampbell
+    port: /opt/openrvdas/local/usap/palmer/devTTYCampbell
 writers:
 - class: LogfileWriter      # Write to logfile
   kwargs:

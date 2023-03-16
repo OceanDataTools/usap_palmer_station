@@ -24,15 +24,15 @@
 
 PREFERENCES_FILE='.install_waterwall_preferences'
 
+#
+OPENRVDAS_PATH=/opt/openrvdas
+DIR_PATH=/opt/openrvdas/local/usap/palmer
+
 # This is the name of the symlinked port that is specified in the various
 # logger config files. We will create a link from it to wherever the
 # actual port is.
-SYMLINK_PORT=/dev/ttyCampbell
+SYMLINK_PORT=${DIR_PATH}/devTTYCampbell
 
-# Defaults that will be overwritten by the preferences file, if it
-# exists.
-DEFAULT_OPENRVDAS_PATH=/opt/openrvdas
-DEFAULT_DIR_PATH=/opt/openrvdas/local/usap/palmer
 #DEFAULT_HTTP_PROXY=proxy.lmg.usap.gov:3128 #$HTTP_PROXY
 DEFAULT_HTTP_PROXY=$http_proxy
 
@@ -96,8 +96,6 @@ function save_default_variables {
     cat > $PREFERENCES_FILE <<EOF
 # Defaults written by/to be read by utils/install_influxdb.sh
 
-DEFAULT_OPENRVDAS_PATH=$OPENRVDAS_PATH
-DEFAULT_DIR_PATH=$DIR_PATH
 #DEFAULT_HTTP_PROXY=proxy.lmg.usap.gov:3128 #$HTTP_PROXY
 DEFAULT_HTTP_PROXY=$HTTP_PROXY
 
@@ -269,8 +267,8 @@ get_os_type
 set_default_variables
 
 if [ "$(whoami)" == "root" ]; then
-  echo "ERROR: installation script must NOT be run as root."
-  exit_gracefully
+    echo "ERROR: installation script must NOT be run as root."
+    exit_gracefully
 fi
 
 # Set creation mask so that everything we install is, by default,
@@ -284,14 +282,24 @@ echo
 echo "This script will customize a standard OpenRVDAS installation to work"
 echo "with the Palmer Station waterwall."
 echo
-read -p "OpenRVDAS path? ($DEFAULT_OPENRVDAS_PATH) " OPENRVDAS_PATH
-OPENRVDAS_PATH=${OPENRVDAS_PATH:-$DEFAULT_OPENRVDAS_PATH}
+echo "For the script to work properly, OpenRVDAS must be installed at the default"
+echo "location of ${OPENRVDAS_PATH}, and the Palmer-specific code must be either"
+echo "installed or linked to ${DIR_PATH}."
 
-read -p "Path to Palmer-specific code? ($DEFAULT_DIR_PATH) " DIR_PATH
-DIR_PATH=${DIR_PATH:-$DEFAULT_DIR_PATH}
+# Check that installations are where we expect them
+if [ ! -f "${OPENRVDAS_PATH}/INSTALL.md" ]; then
+    echo "ERROR: Did not find OpenRVDAS installation at \"${OPENRVDAS_PATH}\" - exiting."
+    exit_gracefully
+fi
+if [ ! -f "${DIR_PATH}/install_waterwall.sh" ]; then
+    echo "ERROR: Did not find Palmer code installation at \"${DIR_PATH}\" - exiting."
+    exit_gracefully
+fi
+
 echo
-echo "During installation, we will create a symlink from $SYMLINK_PORT to"
-echo "the actual serial port the Campbell is connected to."
+echo "During installation, we will create a symlink from"
+echo "$SYMLINK_PORT to the actual"
+echo "serial port the Campbell is connected to."
 echo
 read -p "Actual Campbell serial port? ($DEFAULT_ACTUAL_CAMPBELL_PORT) " ACTUAL_CAMPBELL_PORT
 ACTUAL_CAMPBELL_PORT=${ACTUAL_CAMPBELL_PORT:-$DEFAULT_ACTUAL_CAMPBELL_PORT}
