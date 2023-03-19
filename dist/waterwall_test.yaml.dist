@@ -1,0 +1,28 @@
+###########################################################
+###########################################################
+# YAML cruise definition file for OpenRVDAS, reading waterwall
+# serial data off Campbell Scientific at Palmer Station.
+#
+# 2023-02-26 - David Pablo Cohn
+
+name: Campbell->net
+readers:                    # Read from serial port
+- class: SerialReader
+  kwargs:
+    port: %SERIAL_READ_PORT%
+transforms:                 # Add timestamp and logger label
+- class: PrefixTransform
+  kwargs:
+    prefix: Campbell
+- class: ParseTransform
+  kwargs:
+    record_format: '{data_id:w} {timestamp:ti}, {field_string}'
+    field_patterns:
+    - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+
+writers:
+- class: FileWriter
+#- class: UDPWriter
+#  kwargs:
+#    port: 6224
+#    destination: 255.255.255.255

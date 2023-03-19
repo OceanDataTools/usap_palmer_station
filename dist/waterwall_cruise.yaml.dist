@@ -1,0 +1,118 @@
+###########################################################
+###########################################################
+# YAML cruise definition file for OpenRVDAS, reading waterwall
+# serial data off Campbell Scientific at Palmer Station.
+#
+# 2023-03-02 - David Pablo Cohn
+
+# NOTE: Variables don't work, of course. Currently manually configured
+
+variables:
+  # a symlink to wherever the actual serial port is; /dev/ttyUSB0 or wherever
+  serial_port: /dev/ttyUSB0
+  # 2022-12-30 14:43:30.07, 17.3, 29.9, 51, 0.84, 2251, 47.8, 1.879, 2.775, 3.0349, 33.634
+  parser_field_patterns:
+  - '{Year:d}-{Month:d}-{Day:d} {Hour:d}:{Minute}:{Second:f}, {FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+  - '{Year:d}-{Month:d}-{Day:d}, {Hour:d}:{Minute}:{Second:f}'
+  unparsed_record_port: 6224
+  logfile_base: %DATA_DIR%/Campbell
+
+########################################
+cruise:
+  id: PalmerWaterwall
+  start: '2023-01-01'  # Don't really need these, but...
+  end: '2122-12-31'
+
+########################################
+# We've only got one logger
+loggers:
+  Campbell:
+    configs:
+    - Campbell->off
+    - Campbell->file
+    - Campbell->influx
+    - Campbell->file/influx
+
+########################################
+modes:
+  'off':   # off is a YAML keyword, so needs to be quoted
+    Campbell: Campbell->off
+  file:
+    Campbell: Campbell->file
+  influx:
+    Campbell: Campbell->influx
+  file/influx:
+    Campbell: Campbell->file/influx
+
+########################################
+default_mode: file/influx
+
+########################################
+configs:
+  ###############################
+  Campbell->off:
+    name: Campbell->off
+
+  ###############################
+  Campbell->file:
+    name: Campbell->file
+    readers:                    # Read from serial port
+    - class: SerialReader
+      kwargs:
+        port: %SERIAL_READ_PORT%
+    writers:
+    - class: LogfileWriter      # Write to logfile
+      kwargs:
+        filebase: %DATA_DIR%/Campbell
+        split_char: ','         # What marks timestamp delimiter
+        time_format: '%Y-%m-%d %H:%M:%S.%f'
+
+  ###############################
+  Campbell->influx:
+    name: Campbell->influx
+    readers:                    # Read from serial port
+    - class: SerialReader
+      kwargs:
+        port: %SERIAL_READ_PORT%
+    transforms:
+    - class: PrefixTransform
+      kwargs:
+        prefix: Campbell
+    - class: ParseTransform
+      kwargs:
+        record_format: '{data_id:w} {timestamp:ti}, {field_string}'
+        field_patterns:
+        - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+    writers:
+    - class: InfluxDBWriter
+      kwargs:
+        bucket_name: openrvdas
+
+  ###############################
+  Campbell->file/influx:
+    name: Campbell->file/influx
+    readers:                    # Read from serial port
+    - class: SerialReader
+      kwargs:
+        port: %SERIAL_READ_PORT%
+    writers:
+    - class: LogfileWriter      # Write to logfile
+      kwargs:
+        filebase: %DATA_DIR%/Campbell
+        split_char: ','         # What marks timestamp delimiter
+        time_format: '%Y-%m-%d %H:%M:%S.%f'
+    - class: ComposedWriter     # Parse and write to InfluxDB
+      kwargs:
+        transforms:
+        - class: PrefixTransform
+          kwargs:
+            prefix: Campbell
+        - class: ParseTransform
+          kwargs:
+            record_format: '{data_id:w} {timestamp:ti}, {field_string}'
+            field_patterns:
+            - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+        writers:
+        - class: InfluxDBWriter
+          kwargs:
+            bucket_name: openrvdas

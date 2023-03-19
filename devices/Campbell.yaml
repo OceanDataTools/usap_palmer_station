@@ -1,0 +1,60 @@
+################################################################################
+# Device/Device type definitions for Palmer Station Waterwall
+#
+# 2023-02-26 - David Pablo Cohn - Initial creation
+
+######################################
+Campbell_CR1000:
+  category: "device_type"
+  description: "Campbell Scientific CR1000"
+  format:
+    "{FlowCnt:f}, {FlowRate:f}, {FluorV:f}, {CHL:f}, {xMissV:f}, {Trans:f}, {RtpTemp:f}, {TsgTemp:f}, {TsgCond:f}, {TsgSal:f}"
+  fields:
+    FlowCnt:
+      units: "Counts/Hz"
+      description: "Flow counts"
+    FlowRate:
+      units: "mL/sec"
+      description: "Flow rate"
+    FluorV:
+      units: "mV"
+      description: "Fuorometer voltage"
+    CHL:
+      units: "ug/L"
+      description: "Chlorophyll concentration"
+    xMissV:
+      units: "mV"
+      description: "Transmissometer voltage"
+    Trans:
+      units: "%"
+      description: "Transmission"
+    RtpTemp:
+      units: "Deg C"
+      description: "Seawater intake temperature"
+    TsgTemp:
+      units: "Deg C"
+      description: "Thermosalinograph temperature"
+    TsgCond:
+      units: "S/m"
+      description: "Thermosalinograph conductivity"
+    TsgSal:
+      units: "psu"
+      description: "Thermosalinograph salinity"
+
+######################################
+PalmerWaterwall:
+  category: "device"
+  device_type: "Campbell_CR1000"
+  serial_number: "unknown"
+  description: "unknown"
+  fields:
+    FlowCnt: FlowCnt
+    FlowRate: FlowRate
+    FluorV: FluorV
+    CHL: CHL
+    xMissV: xMissV
+    Trans: Trans
+    RtpTemp: RtpTemp
+    TsgTemp: TsgTemp
+    TsgCond: TsgCond
+    TsgSal: TsgSal

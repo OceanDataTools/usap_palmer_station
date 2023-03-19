@@ -28,17 +28,14 @@ PREFERENCES_FILE='.install_waterwall_preferences'
 OPENRVDAS_PATH=/opt/openrvdas
 DIR_PATH=/opt/openrvdas/local/usap/palmer
 
-# This is the name of the symlinked port that is specified in the various
-# logger config files. We will create a link from it to wherever the
-# actual port is.
-SYMLINK_PORT=${DIR_PATH}/devTTYCampbell
-
-#DEFAULT_HTTP_PROXY=proxy.lmg.usap.gov:3128 #$HTTP_PROXY
-DEFAULT_HTTP_PROXY=$http_proxy
-
 DEFAULT_ACTUAL_CAMPBELL_PORT=/dev/ttyUSB0
 DEFAULT_INSTALL_SIMULATOR=no
+DEFAULT_SIMULATOR_WRITE_PORT=/dev/ttyUSB1
 DEFAULT_RUN_SIMULATOR=no
+
+DEFAULT_DATA_DIR=/data/openrvdas
+
+RVDAS_USER=$USER
 
 ###########################################################################
 ###########################################################################
@@ -96,12 +93,12 @@ function save_default_variables {
     cat > $PREFERENCES_FILE <<EOF
 # Defaults written by/to be read by utils/install_influxdb.sh
 
-#DEFAULT_HTTP_PROXY=proxy.lmg.usap.gov:3128 #$HTTP_PROXY
-DEFAULT_HTTP_PROXY=$HTTP_PROXY
-
 DEFAULT_ACTUAL_CAMPBELL_PORT=$ACTUAL_CAMPBELL_PORT
 DEFAULT_INSTALL_SIMULATOR=$INSTALL_SIMULATOR
+DEFAULT_SIMULATOR_WRITE_PORT=$SIMULATOR_WRITE_PORT
 DEFAULT_RUN_SIMULATOR=$RUN_SIMULATOR
+
+DEFAULT_DATA_DIR=$DATA_DIR
 EOF
 }
 
@@ -132,23 +129,37 @@ yes_no() {
 ###########################################################################
 # Create a symlink from the actual serial port to
 function set_up_data_directory {
-    DATA_DIR=/data/openrvdas
     if [ ! -d $DATA_DIR ]; then
         echo "#########################################################################"
-        echo "Creating data directory ${DATA_DIR}. Please enter sudo password if prompted."
-        sudo mkdir -p /data/openrvdas
-        sudo chown rvdas /data/openrvdas
-        sudo chgrp rvdas /data/openrvdas
+        echo "Creating data directory ${DATA_DIR}."
+        echo "Please enter sudo password if prompted."
+        sudo mkdir -p $DATA_DIR
+        sudo chown $RVDAS_USER $DATA_DIR
+        sudo chgrp wheel $DATA_DIR
     fi
 }
 
 ###########################################################################
-# Create a symlink from the actual serial port to
-function create_serial_port {
+# Create the config files we'll be using, by copying actual serial port location
+# into the dist config files.
+function create_config_files {
     echo "#########################################################################"
-    echo "Creating symlink from actual serial port ($ACTUAL_CAMPBELL_PORT) to $SYMLINK_PORT."
-    echo "Please enter sudo password if prompted."
-    sudo ln -f -s $ACTUAL_CAMPBELL_PORT $SYMLINK_PORT
+    echo "Creating config files."
+    if [ ! -d ${DIR_PATH}/configs ]; then
+        echo "Creating configs subdirectory."
+        mkdir ${DIR_PATH}/configs
+    fi
+    for CONFIG_DIST_PATH in ${DIR_PATH}/dist/*.yaml.dist; do
+        CONFIG_DIST=$(echo $CONFIG_DIST_PATH|sed -e "s/.*dist\///g")
+        CONFIG=$(echo $CONFIG_DIST|sed -e "s/.yaml.dist/.yaml/")
+        echo "    Copying $CONFIG_DIST -> $CONFIG"
+        # Make replacements
+        cat $CONFIG_DIST_PATH \
+          | sed "s:%SERIAL_READ_PORT%:${SERIAL_READ_PORT}:g" \
+          | sed "s:%SIMULATOR_WRITE_PORT%:${SIMULATOR_WRITE_PORT}:g" \
+          | sed "s:%DATA_DIR%:${DATA_DIR}:g" \
+          > ${DIR_PATH}/configs/${CONFIG}
+    done
 }
 
 ###########################################################################
@@ -157,7 +168,7 @@ function set_up_supervisor {
     echo "#####################################################################"
     # Don't want existing installations to be running while we do this
     echo Stopping supervisor prior to installation.
-    supervisorctl stop all
+    supervisorctl stop all || echo "Unable to stop supervisor?!?"
 
     echo Setting up supervisord file...
 
@@ -201,7 +212,7 @@ chown=nobody:rvdas
 port=9001
 
 [program:waterwall_logger]
-command=${OPENRVDAS_PATH}/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/waterwall_logger+file+influx.yaml
+command=${OPENRVDAS_PATH}/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/configs/waterwall_logger+file+influx.yaml
 environment=PATH="${OPENRVDAS_PATH}/venv/bin:/usr/bin:/usr/local/bin"
 directory=${OPENRVDAS_PATH}
 autostart=true
@@ -227,7 +238,7 @@ EOF
         cat >> $TMP_SUPERVISOR_CONF <<EOF
 
 [program:simulate_campbell]
-command=${OPENRVDAS_PATH}/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/simulate_campbell.yaml
+command=${OPENRVDAS_PATH}/venv/bin/python logger/listener/listen.py --config_file ${DIR_PATH}/configs/simulate_campbell.yaml
 directory=${OPENRVDAS_PATH}
 autostart=${AUTOSTART_SIMULATOR}
 autorestart=true
@@ -297,9 +308,9 @@ if [ ! -f "${DIR_PATH}/install_waterwall.sh" ]; then
 fi
 
 echo
-echo "During installation, we will create a symlink from"
-echo "$SYMLINK_PORT to the actual"
-echo "serial port the Campbell is connected to."
+echo "During installation, we will create copies of logger config files that"
+echo "point to the actual serial port location on your machine that the Campbell"
+echo "is connected to."
 echo
 read -p "Actual Campbell serial port? ($DEFAULT_ACTUAL_CAMPBELL_PORT) " ACTUAL_CAMPBELL_PORT
 ACTUAL_CAMPBELL_PORT=${ACTUAL_CAMPBELL_PORT:-$DEFAULT_ACTUAL_CAMPBELL_PORT}
@@ -313,12 +324,22 @@ INSTALL_SIMULATOR=$YES_NO_RESULT
 if [ $INSTALL_SIMULATOR == 'yes' ]; then
     yes_no "Should the simulator be run by default at system startup?" $DEFAULT_RUN_SIMULATOR
     RUN_SIMULATOR=$YES_NO_RESULT
+
+    if [ $INSTALL_SIMULATOR == 'yes' ]; then
+        echo
+        echo "The simulator will write to a (different!) serial port that should be connected"
+        echo "by cable to the serial port that the logger will be reading from."
+        echo
+        read -p "What serial port will the simulator be writing to?  ($DEFAULT_SIMULATOR_WRITE_PORT) " SIMULATOR_WRITE_PORT
+        SIMULATOR_WRITE_PORT=${SIMULATOR_WRITE_PORT:-$DEFAULT_SIMULATOR_WRITE_PORT}
+    fi
 else
     RUN_SIMULATOR='no'
 fi
+
 echo
-read -p "HTTP/HTTPS proxy to use ($DEFAULT_HTTP_PROXY)? " HTTP_PROXY
-HTTP_PROXY=${HTTP_PROXY:-$DEFAULT_HTTP_PROXY}
+read -p "Directory to write logged data to? ($DEFAULT_DATA_DIR) " DATA_DIR
+DATA_DIR=${DATA_DIR:-$DEFAULT_DATA_DIR}
 echo
 
 #########################################################################
@@ -326,17 +347,11 @@ echo
 save_default_variables
 
 #########################################################################
-# Set up proxy, if defined
-[ -z $HTTP_PROXY ] || echo Setting up proxy $HTTP_PROXY
-[ -z $HTTP_PROXY ] || export http_proxy=$HTTP_PROXY
-[ -z $HTTP_PROXY ] || export https_proxy=$HTTP_PROXY
-
-#########################################################################
 # Do the actual things.
 
 set_up_data_directory
 
-create_serial_port
+create_config_files
 
 set_up_supervisor
 
