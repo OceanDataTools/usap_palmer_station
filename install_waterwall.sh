@@ -28,7 +28,7 @@ PREFERENCES_FILE='.install_waterwall_preferences'
 OPENRVDAS_PATH=/opt/openrvdas
 DIR_PATH=/opt/openrvdas/local/usap/palmer
 
-DEFAULT_ACTUAL_CAMPBELL_PORT=/dev/ttyUSB0
+DEFAULT_SERIAL_READ_PORT=/dev/ttyUSB0
 DEFAULT_INSTALL_SIMULATOR=no
 DEFAULT_SIMULATOR_WRITE_PORT=/dev/ttyUSB1
 DEFAULT_RUN_SIMULATOR=no
@@ -94,7 +94,7 @@ function save_default_variables {
     cat > $PREFERENCES_FILE <<EOF
 # Defaults written by/to be read by utils/install_influxdb.sh
 
-DEFAULT_ACTUAL_CAMPBELL_PORT=$ACTUAL_CAMPBELL_PORT
+DEFAULT_SERIAL_READ_PORT=$ACTUAL_CAMPBELL_PORT
 DEFAULT_INSTALL_SIMULATOR=$INSTALL_SIMULATOR
 DEFAULT_SIMULATOR_WRITE_PORT=$SIMULATOR_WRITE_PORT
 DEFAULT_RUN_SIMULATOR=$RUN_SIMULATOR
@@ -315,8 +315,8 @@ echo "During installation, we will create copies of logger config files that"
 echo "point to the actual serial port location on your machine that the Campbell"
 echo "is connected to."
 echo
-read -p "Actual Campbell serial port? ($DEFAULT_ACTUAL_CAMPBELL_PORT) " ACTUAL_CAMPBELL_PORT
-ACTUAL_CAMPBELL_PORT=${ACTUAL_CAMPBELL_PORT:-$DEFAULT_ACTUAL_CAMPBELL_PORT}
+read -p "Serial port to read from? ($DEFAULT_SERIAL_READ_PORT) " SERIAL_READ_PORT
+SERIAL_READ_PORT=${SERIAL_READ_PORT:-$DEFAULT_SERIAL_READ_PORT}
 echo
 echo "Do you want to install a 'simulator' script (simulate_campbell.py) that feeds"
 echo "canned data to the logger's serial port? If installed, the simulator can be"
