@@ -49,6 +49,7 @@ function exit_gracefully {
 function get_os_type {
     if [[ `uname -s` == 'Darwin' ]];then
         OS_TYPE=MacOS
+
     elif [[ `uname -s` == 'Linux' ]];then
         if [[ ! -z `grep "NAME=\"Ubuntu\"" /etc/os-release` ]] || [[ ! -z `grep "NAME=\"Debian" /etc/os-release` ]] || [[ ! -z `grep "NAME=\"Raspbian" /etc/os-release` ]];then
             OS_TYPE=Ubuntu
@@ -171,18 +172,20 @@ function set_up_supervisor {
     supervisorctl stop all || echo "Unable to stop supervisor?!?"
 
     echo Setting up supervisord file...
-
     TMP_SUPERVISOR_CONF=/tmp/waterwall_logger.ini
 
     if [ $OS_TYPE == 'MacOS' ]; then
+        RVDAS_GROUP=wheel
         SUPERVISOR_CONF=/usr/local/etc/supervisor.d/waterwall_logger.ini
         OPENRVDAS_CONF=/usr/local/etc/supervisor.d/openrvdas.ini
     # If CentOS/Ubuntu/etc, different distributions hide them
     # different places. Sigh.
     elif [ $OS_TYPE == 'CentOS' ]; then
+        RVDAS_GROUP=$RVDAS_USER
         SUPERVISOR_CONF=/etc/supervisord.d/waterwall_logger.ini
         OPENRVDAS_CONF=/etc/supervisord.d/openrvdas.ini
     elif [ $OS_TYPE == 'Ubuntu' ]; then
+        RVDAS_GROUP=$RVDAS_USER
         SUPERVISOR_CONF=/etc/supervisor/conf.d/waterwall_logger.conf
         OPENRVDAS_CONF=/etc/supervisor/conf.d/openrvdas.conf
     else
@@ -206,7 +209,7 @@ function set_up_supervisor {
 [unix_http_server]
 file=/var/run/supervisor.sock   ; (the path to the socket file)
 chmod=0770              ; socket file mode (default 0700)
-chown=nobody:rvdas
+chown=nobody:${RVDAS_GROUP}
 
 [inet_http_server]
 port=9001
@@ -222,7 +225,7 @@ killasgroup=true
 stderr_logfile=/var/log/openrvdas/waterwall_logger.stderr
 stderr_logfile_maxbytes=10000000 ; 10M
 stderr_logfile_maxbackups=100
-user=rvdas
+user=${RVDAS_USER}
 EOF
 
     # If user wants the simulator installed, add it to the
@@ -247,7 +250,7 @@ killasgroup=true
 stderr_logfile=/var/log/openrvdas/simulate_campbell.stderr
 stderr_logfile_maxbytes=10000000 ; 10M
 stderr_logfile_maxbackups=100
-user=rvdas
+user=${RVDAS_USER}
 EOF
     fi  # end of if [[ $INSTALL_SIMULATOR == 'yes' ]]
 
