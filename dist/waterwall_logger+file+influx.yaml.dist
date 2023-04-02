@@ -10,6 +10,11 @@ readers:                    # Read from serial port
 - class: SerialReader
   kwargs:
     port: %SERIAL_READ_PORT%
+transforms:
+- class: StripTransform
+  module: logger.transforms.strip_transform
+  kwargs:
+    unprintable: true
 writers:
 - class: LogfileWriter      # Write to logfile
   kwargs:

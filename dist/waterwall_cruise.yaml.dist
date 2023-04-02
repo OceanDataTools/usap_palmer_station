@@ -60,6 +60,11 @@ configs:
     - class: SerialReader
       kwargs:
         port: %SERIAL_READ_PORT%
+    transforms:
+    - class: StripTransform
+      module: logger.transforms.strip_transform
+      kwargs:
+        unprintable: true
     writers:
     - class: LogfileWriter      # Write to logfile
       kwargs:
@@ -75,6 +80,10 @@ configs:
       kwargs:
         port: %SERIAL_READ_PORT%
     transforms:
+    - class: StripTransform
+      module: logger.transforms.strip_transform
+      kwargs:
+        unprintable: true
     - class: PrefixTransform
       kwargs:
         prefix: Campbell
@@ -95,6 +104,11 @@ configs:
     - class: SerialReader
       kwargs:
         port: %SERIAL_READ_PORT%
+    transforms:
+    - class: StripTransform
+      module: logger.transforms.strip_transform
+      kwargs:
+        unprintable: true
     writers:
     - class: LogfileWriter      # Write to logfile
       kwargs:
