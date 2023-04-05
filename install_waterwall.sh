@@ -169,7 +169,7 @@ function set_up_supervisor {
     echo "#####################################################################"
     # Don't want existing installations to be running while we do this
     echo Stopping supervisor prior to installation.
-    supervisorctl stop all || echo "Unable to stop supervisor?!?"
+    sudo supervisorctl stop all || echo "Unable to stop supervisor?!?"
 
     echo Setting up supervisord file...
     TMP_SUPERVISOR_CONF=/tmp/waterwall_logger.ini
@@ -263,7 +263,7 @@ EOF
     fi
 
     echo Done setting up supervisor files. Reloading...
-    supervisorctl reload
+    sudo supervisorctl reload
 }
 
 ###########################################################################
