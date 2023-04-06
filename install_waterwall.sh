@@ -25,6 +25,7 @@
 PREFERENCES_FILE='.install_waterwall_preferences'
 
 #
+INSTALL_ROOT=/opt
 OPENRVDAS_PATH=/opt/openrvdas
 DIR_PATH=/opt/openrvdas/local/usap/palmer
 
@@ -295,6 +296,13 @@ echo "#####################################################################"
 echo
 echo "This script will customize a standard OpenRVDAS installation to work"
 echo "with the Palmer Station waterwall."
+echo
+read -p "OpenRVDAS install root? ($DEFAULT_INSTALL_ROOT) " INSTALL_ROOT
+INSTALL_ROOT=${INSTALL_ROOT:-$DEFAULT_INSTALL_ROOT}
+echo "Install root will be '$INSTALL_ROOT'"
+
+OPENRVDAS_PATH=${INSTALL_ROOT}/openrvdas
+DIR_PATH=${OPENRVDAS_PATH}/local/usap/palmer
 echo
 echo "For the script to work properly, OpenRVDAS must be installed at the default"
 echo "location of ${OPENRVDAS_PATH}, and the Palmer-specific code must be either"
