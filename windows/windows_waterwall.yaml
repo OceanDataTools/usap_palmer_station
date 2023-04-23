@@ -1,0 +1,47 @@
+###########################################################
+###########################################################
+# YAML cruise definition file for OpenRVDAS, reading waterwall
+# serial data off Campbell Scientific at Palmer Station.
+#
+# Note that, in unmodified form, it will read from UDP port 6224
+# to allow easy testing in conjunction with simulate_udp_data.yaml.
+#
+# To run on real data, comment out the UDPReader and uncomment the
+# SerialReader, inserting the correct serial port name.
+
+# 2023-04-23 - David Pablo Cohn
+
+name: file+influx
+readers:                    # Read from serial port
+#- class: SerialReader
+#  kwargs:
+#    port: %SERIAL_READ_PORT%
+- class: UDPReader
+  kwargs:
+    port: 6224
+transforms:
+- class: StripTransform
+  module: logger.transforms.strip_transform
+  kwargs:
+    unprintable: true
+writers:
+- class: LogfileWriter      # Write to logfile
+  kwargs:
+    filebase: /Users/waterwall/data/Campbell
+    split_char: ','         # What marks timestamp delimiter
+    time_format: '%Y-%m-%d %H:%M:%S.%f'
+- class: ComposedWriter     # Parse and write to InfluxDB
+  kwargs:
+    transforms:
+    - class: PrefixTransform
+      kwargs:
+        prefix: Campbell
+    - class: ParseTransform
+      kwargs:
+        record_format: '{data_id:w} {timestamp:ti}, {field_string}'
+        field_patterns:
+        - '{FlowCnt:g}, {FlowRate:g}, {FluorV:g}, {CHL:g}, {xMissV:g}, {Trans:g}, {RtpTemp:g}, {TsgTemp:g}, {TsgCond:g}, {TsgSal:g}'
+    writers:
+    - class: InfluxDBWriter
+      kwargs:
+        bucket_name: openrvdas

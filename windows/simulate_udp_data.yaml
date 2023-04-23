@@ -1,0 +1,33 @@
+###########################################################
+###########################################################
+# Simulate the Palmer Station Campbell Scientific CR1000
+# as configured, but spit out on port 6224 instead of serial port.
+#
+# Run using:
+#   python logger/listener/listen.py --config_file simulate_udp_data.yaml
+#
+# while, in a separate window, running
+#   python logger/listener/listen.py --config_file windows_waterwall.yaml
+#
+# If windows_waterwall.yaml has not been modified to read from a serial
+# port, it will read from UDP 6224.
+#
+name: Campbell->net
+readers:                    # Read from serial port
+- class: TextFileReader
+  kwargs:
+    file_spec: /Users/waterwall/usap_palmer_station/data/waterwall_20230123.txt
+    interval: 5
+transforms:
+- class: SliceTransform     # Strip old timestamp and add "now"
+  kwargs:
+    fields: '2:'
+    sep: ' '
+- class: TimestampTransform
+  kwargs:
+    time_format: '%Y-%m-%d %H:%M:%S.%f'  # Local, with blank time_zone
+    sep: ', '
+writers:
+- class: UDPWriter
+  kwargs:
+    port: 6224
